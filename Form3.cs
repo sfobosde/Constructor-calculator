@@ -8,175 +8,132 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Data.OleDb;
 
 namespace WindowsFormsApp1
 {
 	public partial class Form3 : Form
 	{
+		public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Projects.mdb;";
+		private OleDbConnection myConnection;
 		public Form3()
 		{
-			InitializeComponent(); 
-			string ffolder = @"C:\Users\Admin\Desktop\project.txt";
-			using (StreamReader prf = new StreamReader(ffolder, System.Text.Encoding.Default))
-			{
-				string line;
-				while((line = prf.ReadLine()) != null)
-				{
-					string[] dt = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					try
-					{
-						listBox1.Items.Add(dt[0]);
-						totalprojects++;
-					}
-					catch
-					{
+			InitializeComponent();
+			myConnection = new OleDbConnection(connectString);
+			myConnection.Open();
 
-					}
+			//name, x, y, z, weight, material, de, kt, fp, d, d0, Diam 
+			string query = "SELECT name FROM Projects ORDER BY p_id ";
+
+			try
+			{
+				OleDbCommand command = new OleDbCommand(query, myConnection);
+
+				OleDbDataReader reader = command.ExecuteReader();
+
+				listBox1.Items.Clear();
+
+				while (reader.Read())
+				{
+					listBox1.Items.Add(reader[0].ToString());
 				}
 			}
-		}
-		class Project
-		{
-			public string name;
-			public double x;
-			public double y;
-			public double z;
-			public double weight;
-			public string material;
-			public double de;
-			public int kt;
-			public double fp;
-			public double d;
-			public double d0;
-			public double D;
-			public Project(
-				string name, double x, double y, double z, double weight,
-				string material, double de, int kt, double fp, double d,
-				double d0, double D
-			)
+			catch
 			{
-				this.name = name;
-				this.x = x;
-				this.y = y;
-				this.z = z;
-				this.weight = weight;
-				this.material = material;
-				this.de = de;
-				this.kt = kt;
-				this.fp = fp;
-				this.d = d;
-				this.d0 = d0;
-				this.D = D;
+				MessageBox.Show("Отсутсвует база данных проектов");
 			}
 		}
-		Project Selected;
+
 		static string preview;
-		static string sn;
-		static int totalprojects = 0;
-		private void Form3_Load(object sender, EventArgs e)
-		{
-
-		}
-
-		private void listBox1_DoubleClick(object sender, EventArgs e)
-		{
-
-		}
 
 		private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			int index = this.listBox1.IndexFromPoint(e.Location);
 			if (index != System.Windows.Forms.ListBox.NoMatches)
 				textBox2.Text = this.listBox1.Text;
-
-			string ffolder = @"C:\Users\Admin\Desktop\project.txt";
-			using (StreamReader prf = new StreamReader(ffolder, System.Text.Encoding.Default))
-			{
-				string line;
-				while ((line = prf.ReadLine()) != null)
-				{
-					string[] dt = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					try
-					{
-						if (dt[0].Equals(textBox2.Text))
-						{
-							Selected = new Project(dt[0], Convert.ToDouble(dt[1]), Convert.ToDouble(dt[2]), Convert.ToDouble(dt[3]),
-								Convert.ToDouble(dt[4]), dt[5], Convert.ToDouble(dt[6]), Convert.ToInt32(dt[7]), Convert.ToDouble(dt[8]),
-								Convert.ToDouble(dt[9]), Convert.ToDouble(dt[10]), Convert.ToDouble(dt[11]));
-							preview = "Название:" + dt[0] + " Размеры:" + dt[1] + "x" + dt[2] + "x" + dt[3] + " Масса:" + dt[4] + " Материал основания:" + dt[5];
-						}
-					}
-					catch
-					{
-						textBox2.Text = "";
-
-					}
-				}
-			}
 		}
 
 		private void button3_Click(object sender, EventArgs e)
 		{
-			textBox3.Text = preview;
-		}
-		delegate void PrintProjectData(string name, double x, double y, double z, double weight, string material, double de, int kt, double fp, double d, double d0, double D);
-		private void button4_Click(object sender, EventArgs e)
-		{
+			//предварительный просмотр
 			try
 			{
-				PrintProjectData PrintData = new PrintProjectData(Form1.ShowData);
-				Hide();
-				PrintData(Selected.name, Selected.x, Selected.y, Selected.z, 
-					Selected.weight,Selected.material, Selected.de, Selected.kt, 
-					Selected.fp, Selected.d, Selected.d0, Selected.D);
+				string query = "SELECT name, x, y, z, weight, material FROM Projects ORDER BY p_id";
+
+				OleDbCommand command = new OleDbCommand(query, myConnection);
+
+				OleDbDataReader reader = command.ExecuteReader();
+
+				listBox2.Items.Clear();
+
+				while ((reader.Read()) && (reader[0].Equals(textBox2.Text) == false));
+
+				listBox2.Items.Add("Название:" + reader[0].ToString());
+				listBox2.Items.Add("Размеры:" + reader[1].ToString() + "x" + reader[2].ToString() + "x" + reader[3].ToString());
+				listBox2.Items.Add("Масса:" + reader[4].ToString());
+				listBox2.Items.Add("Материал основания:" + reader[5].ToString());
 			}
 			catch
 			{
 				MessageBox.Show("Выберите проект");
 			}
 		}
+		delegate void PrintProjectData(string name, string x, string y, string z, 
+									   string weight, string material, string de, 
+									   string kt, string fp, string d, string d0, string D);
+		private void button4_Click(object sender, EventArgs e)
+		{
+			//кнопка открыть
+			string query = "SELECT name, x, y, z, weight, material, de, kt, fp, d, d0, Diam FROM Projects ORDER BY p_id";
+
+			OleDbCommand command = new OleDbCommand(query, myConnection);
+
+			OleDbDataReader reader = command.ExecuteReader();
+
+			while ((reader.Read()) && (reader[0].Equals(textBox2.Text) == false)) ;
+
+			PrintProjectData PrintData = new PrintProjectData(Form1.ShowData);
+			Hide();
+			PrintData(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(),
+				reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
+				reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+		}
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			string[] projects = new string[totalprojects];
-			string ffolder = @"C:\Users\Admin\Desktop\project.txt";
-			using (StreamReader prf = new StreamReader(ffolder, System.Text.Encoding.Default))
-			{
-				string line;
-				int i = 0;
-				while ((line = prf.ReadLine()) != null)
-				{
-					string[] dt = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					if (dt[0].Equals(textBox2.Text) == false)
-						projects[i] = line;
-					i++;
-				}
-			}
-			try
-			{
-				using (StreamWriter prf = new StreamWriter(ffolder, false, System.Text.Encoding.Default))
-				{
-					int i = 0;
-					prf.WriteLine(projects[i]);
-				}
-			}
-			catch
-			{
+			//КНОПКА УДАЛИТЬ
+			string query = "DELETE FROM Projects WHERE name = '" + textBox2.Text + "'";
 
-			}
-			Invalidate();
+			OleDbCommand command = new OleDbCommand(query, myConnection);
+
+			command.ExecuteNonQuery();
+			
+
+			OleDbDataReader reader = command.ExecuteReader();
+
+			listBox1.Items.Clear();
 		}
 
-		private void listBox1_Click(object sender, EventArgs e)
+		private void Form3_FormClosing(object sender, FormClosingEventArgs e)
 		{
-
+			myConnection.Close();
 		}
 
-		private void textBox2_MouseClick(object sender, MouseEventArgs e)
+		private void button2_Click(object sender, EventArgs e)
 		{
-			int index = this.listBox1.IndexFromPoint(e.Location);
-			if (index != System.Windows.Forms.ListBox.NoMatches)
-				sn = this.listBox1.Text;
+			//кнопка обновить
+			string query = "SELECT name FROM Projects ORDER BY p_id ";
+
+			OleDbCommand command = new OleDbCommand(query, myConnection);
+
+			OleDbDataReader reader = command.ExecuteReader();
+
+			listBox1.Items.Clear();
+
+			while (reader.Read())
+			{
+				listBox1.Items.Add(reader[0].ToString());
+			}
 		}
 	}
 }

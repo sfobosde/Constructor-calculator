@@ -90,7 +90,7 @@ namespace WindowsFormsApp1
 					plot = 10.22;
 					Km = 1.10;
 				}
-				else if (material.Equals("Фенольная_смола"))
+				else if (material.Equals("Фенольная смола"))
 				{
 					plot = 7.82;
 					Km = 0.47;
@@ -100,7 +100,7 @@ namespace WindowsFormsApp1
 					plot = 4.5;
 					Km = 0.93;
 				}
-				else if (material.Equals("Алюминиевые_сплавы"))
+				else if (material.Equals("Алюминиевые сплавы"))
 				{
 					plot = 2.7;
 					Km = 0.95;
@@ -110,15 +110,16 @@ namespace WindowsFormsApp1
 					plot = 2.47;
 					Km = 0.54;
 				}
-				else if (material.Equals("Эпоксидная_смола"))
+				else if (material.Equals("Эпоксидная смола"))
 				{
 					plot = 1.2;
 					Km = 0.52;
 				}
+				Kv = 1 / Math.Pow((1+(weight/(x*y*z*plot))),0.5);
 				f1 = Km * Kv * B * z * 10000 / (x * x);
 				p = f1 * 0.8 / 9.8;
 				nmax = (f1 / 9.8) - B;
-				f2 = Math.Pow(p*9.8*nmax/(3*y),2/3);
+				f2 = Math.Pow(p*9.8*nmax/(3*y), 0.66);
 				VP = f1 > f2;
 				if(VP==true)
 					fp = f2 * 100 / f1;
@@ -135,11 +136,8 @@ namespace WindowsFormsApp1
 				D = d + dvo + 2 * gp + tvo + 2 * dtr + Math.Pow(Td*Td + TD*TD + tno*tno, 0.5);
 			}
 		}
-		private void label9_Click(object sender, EventArgs e)
-		{
 
-		}
-		delegate void PrintProjectData(string name, double x, double y, double z, double weight, string material, double de, int kt, double fp, double d, double d0, double D);
+		delegate void PrintProjectData(string name, string x, string y, string z, string weight, string material, string de, string kt, string fp, string d, string d0, string D);
 		private void button1_Click(object sender, EventArgs e)
 		{
 			PrintProjectData PrintData = new PrintProjectData(Form1.ShowData);
@@ -147,18 +145,19 @@ namespace WindowsFormsApp1
 			try
 			{
 				Hide();
-				plata = new PLATA(textBox1.Text, Convert.ToDouble(textBox2.Text), Convert.ToDouble(textBox7.Text), Convert.ToDouble(textBox5.Text), Convert.ToDouble(textBox4.Text), textBox6.Text, Convert.ToDouble(textBox3.Text), Convert.ToInt32(textBox8.Text));
-				PrintData(plata.name, plata.x, plata.y, plata.z, plata.weight, plata.material, plata.de, plata.kt, plata.fp, plata.d, plata.d0, plata.D);
+
+				plata = new PLATA(textBox1.Text, Convert.ToDouble(textBox2.Text), Convert.ToDouble(textBox7.Text), 
+					Convert.ToDouble(textBox5.Text), Convert.ToDouble(textBox4.Text), textBox6.Text, 
+					Convert.ToDouble(textBox3.Text), Convert.ToInt32(textBox8.Text));
+
+				PrintData(plata.name, plata.x.ToString(), plata.y.ToString(), plata.z.ToString(), 
+					plata.weight.ToString(), plata.material, plata.de.ToString(), plata.kt.ToString(), 
+					plata.fp.ToString(), plata.d.ToString(), plata.d0.ToString(), plata.D.ToString());
 			}
 			catch
 			{
 				MessageBox.Show("Данные введены неправильно");
 			}
-		}
-
-		private void Form2_Load(object sender, EventArgs e)
-		{
-
 		}
 	}
 }

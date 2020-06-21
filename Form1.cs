@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Data.OleDb;
 
 namespace WindowsFormsApp1
 {
@@ -22,9 +23,17 @@ namespace WindowsFormsApp1
 		MenuItem load_file;
 		MenuItem save_file;
 		MenuItem exit;
+
+		public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Projects.mdb;";
+		private OleDbConnection myConnection;
+
 		public Form1()
 		{
 			InitializeComponent();
+
+			myConnection = new OleDbConnection(connectString);
+			myConnection.Open();
+
 			new_file = new MenuItem("Создать", new EventHandler(CreateNewProject));
 			load_file = new MenuItem("Открыть", new EventHandler(LoadProject));
 			save_file = new MenuItem("Сохранить", new EventHandler(SaveProject));
@@ -35,50 +44,7 @@ namespace WindowsFormsApp1
 			main_menu = new MainMenu(new MenuItem[] { file_item, settings_item, info_item });
 			this.Menu = main_menu;
 		}
-		class Project
-		{
-			public string name;
-			public double x;
-			public double y;
-			public double z;
-			public double weight;
-			public string material;
-			public double de;
-			public int kt;
-			public double fp;
-			public double d;
-			public double d0;
-			public double D;
-			public static string data;
-			public Project(
-				string name, double x, double y, double z, double weight,
-				string material, double de, int kt, double fp, double d,
-				double d0, double D
-			)
-			{
-				this.name = name;
-				this.x = x;
-				this.y = y;
-				this.z = z;
-				this.weight = weight;
-				this.material = material;
-				this.de = de;
-				this.kt = kt;
-				this.fp = fp;
-				this.d = d;
-				this.d0 = d0;
-				this.D = D;
-				data = name + " " + Convert.ToString(x) + " " + Convert.ToString(y) + " " + Convert.ToString(z) + " " + Convert.ToString(weight) + " " + material + " "
-					+ Convert.ToString(de) + " " + Convert.ToString(kt) + " " + Convert.ToString(fp) + " " + Convert.ToString(d) + " " + Convert.ToString(d0) + " "
-					+ Convert.ToString(D);
-			}
-			public static string dt()
-			{
-				return Project.data;
-			}
-		}
-		delegate string ToGetConcastString();
-		static Project Sardor;
+
 		void CreateNewProject(object sr, EventArgs e)
 		{
 			Form2 LoadData = new Form2();
@@ -91,24 +57,19 @@ namespace WindowsFormsApp1
 		}
 		void SaveProject(object sr, EventArgs e)
 		{
-			string ffolder = @"C:\Users\Admin\Desktop\project.txt";
-			ToGetConcastString GetConcastString = new ToGetConcastString(Project.dt);
-			string data = GetConcastString();
-			try
-			{
-				using(StreamWriter prf = new StreamWriter(ffolder, true, System.Text.Encoding.Default))
-				{
-					prf.WriteLine(data);
-				}
-			}
-			catch
-			{
+			string query = "INSERT INTO Projects (name, x, y, z, weight, material, de, kt, fp, d, d0, Diam) VALUES ";
+			string data = "('" + textBox1.Text + "', '" + textBox2.Text + "', '" + textBox4.Text + "', '" 
+							   + textBox3.Text + "', '" + textBox8.Text + "', '" + textBox7.Text + "', '"
+							   + textBox6.Text + "', '" + textBox5.Text + "', '" + textBox12.Text + "', '" 
+							   + textBox11.Text + "', '" + textBox10.Text + "', '" + textBox9.Text 	+ "')";
+			query = query + data;
 
-			}
+			OleDbCommand command = new OleDbCommand(query, myConnection);
+			command.ExecuteNonQuery();
 		}
 		void ExitFromApp(object sr, EventArgs e)
 		{
-
+			this.Close();
 		}
 		void AppSettings(object sr, EventArgs e)
 		{
@@ -116,41 +77,33 @@ namespace WindowsFormsApp1
 		}
 		void AppInfo(object sr, EventArgs e)
 		{
-
+			Form4 InfPage = new Form4();
+			InfPage.ShowDialog();
 		}
 		public static void ShowData(
-			string name, double x, double y, double z, double weight,
-			string material, double de, int kt, double fp, double d,
-			double d0, double D
+			string name, string x, string y, string z, string weight,
+			string material, string de, string kt, string fp, string d,
+			string d0, string D
 		)
 		{
 			Form1 project = new Form1();
 			project.textBox1.Text = name;
-			project.textBox2.Text = Convert.ToString(x);
-			project.textBox4.Text = Convert.ToString(y);
-			project.textBox3.Text = Convert.ToString(z);
-			project.textBox8.Text = Convert.ToString(weight);
+			project.textBox2.Text = x;
+			project.textBox4.Text = y;
+			project.textBox3.Text = z;
+			project.textBox8.Text = weight;
 			project.textBox7.Text = material;
-			project.textBox6.Text = Convert.ToString(de);
-			project.textBox5.Text = Convert.ToString(kt);
-			project.textBox12.Text = Convert.ToString(fp);
-			project.textBox11.Text = Convert.ToString(d);
-			project.textBox10.Text = Convert.ToString(d0);
-			project.textBox9.Text = Convert.ToString(D);
-			Sardor = new Project(
-				name, x, y, z, weight, material,
-				de, kt, fp, d, d0, D
-			);
+			project.textBox6.Text = de;
+			project.textBox5.Text = kt;
+			project.textBox12.Text = fp;
+			project.textBox11.Text = d;
+			project.textBox10.Text = d0;
+			project.textBox9.Text = D;
 			project.ShowDialog();
 		}
-		private void Form1_Load(object sender, EventArgs e)
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-
-		}
-
-		private void textBox1_TextChanged(object sender, EventArgs e)
-		{
-
+			myConnection.Close();
 		}
 	}
 }

@@ -165,7 +165,7 @@
 			this.button1.Location = new System.Drawing.Point(142, 325);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(216, 45);
-			this.button1.TabIndex = 7;
+			this.button1.TabIndex = 8;
 			this.button1.Text = "Произвести расчёт";
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -184,7 +184,7 @@
 			this.textBox8.Location = new System.Drawing.Point(310, 250);
 			this.textBox8.Name = "textBox8";
 			this.textBox8.Size = new System.Drawing.Size(100, 22);
-			this.textBox8.TabIndex = 16;
+			this.textBox8.TabIndex = 7;
 			// 
 			// label9
 			// 
@@ -194,7 +194,6 @@
 			this.label9.Size = new System.Drawing.Size(112, 17);
 			this.label9.TabIndex = 17;
 			this.label9.Text = "Класс точности";
-			this.label9.Click += new System.EventHandler(this.label9_Click);
 			// 
 			// Form2
 			// 
@@ -221,7 +220,6 @@
 			this.Controls.Add(this.textBox1);
 			this.Name = "Form2";
 			this.Text = "Создание проекта";
-			this.Load += new System.EventHandler(this.Form2_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
