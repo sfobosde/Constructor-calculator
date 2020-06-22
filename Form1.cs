@@ -24,12 +24,21 @@ namespace WindowsFormsApp1
 		MenuItem save_file;
 		MenuItem exit;
 
+		public static Font font;
+
+		public static void SetFont(Font newfont)
+		{
+			font = newfont;
+		}
+
 		public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Projects.mdb;";
 		private OleDbConnection myConnection;
 
 		public Form1()
 		{
 			InitializeComponent();
+
+			this.Font = font;
 
 			myConnection = new OleDbConnection(connectString);
 			myConnection.Open();
@@ -80,7 +89,8 @@ namespace WindowsFormsApp1
 		}
 		void AppSettings(object sr, EventArgs e)
 		{
-
+			Form5 SettingsWind = new Form5();
+			SettingsWind.ShowDialog();
 		}
 		void AppInfo(object sr, EventArgs e)
 		{

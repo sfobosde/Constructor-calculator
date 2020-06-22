@@ -16,9 +16,17 @@ namespace WindowsFormsApp1
 	{
 		public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Projects.mdb;";
 		private OleDbConnection myConnection;
+
+		public static Font font;
+
+		public static void SetFont(Font newfont)
+		{
+			font = newfont;
+		}
 		public Form3()
 		{
 			InitializeComponent();
+			this.Font = font;
 			myConnection = new OleDbConnection(connectString);
 			myConnection.Open();
 
@@ -57,7 +65,7 @@ namespace WindowsFormsApp1
 			//предварительный просмотр
 			try
 			{
-				string query = "SELECT name, x, y, z, weight, material FROM Projects ORDER BY p_id";
+				string query = "SELECT name, x, y, z, weight, material, de, kt FROM Projects ORDER BY p_id";
 
 				OleDbCommand command = new OleDbCommand(query, myConnection);
 
@@ -71,6 +79,8 @@ namespace WindowsFormsApp1
 				listBox2.Items.Add("Размеры:" + reader[1].ToString() + "x" + reader[2].ToString() + "x" + reader[3].ToString());
 				listBox2.Items.Add("Масса:" + reader[4].ToString());
 				listBox2.Items.Add("Материал основания:" + reader[5].ToString());
+				listBox2.Items.Add("Диаметр вывода ЭРИ:" + reader[6].ToString());
+				listBox2.Items.Add("Класс точности:" + reader[7].ToString());
 			}
 			catch
 			{
@@ -92,10 +102,17 @@ namespace WindowsFormsApp1
 			while ((reader.Read()) && (reader[0].Equals(textBox2.Text) == false)) ;
 
 			PrintProjectData PrintData = new PrintProjectData(Form1.ShowData);
-			Hide();
-			PrintData(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(),
+
+			try
+			{
+				PrintData(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(),
 				reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
 				reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+			}
+			catch
+			{
+				MessageBox.Show("Выберите проект");
+			}
 		}
 
 		private void button1_Click(object sender, EventArgs e)

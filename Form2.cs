@@ -15,6 +15,14 @@ namespace WindowsFormsApp1
 		public Form2()
 		{
 			InitializeComponent();
+			this.Font = font;
+		}
+
+		public static Font font;
+
+		public static void SetFont(Font newfont)
+		{
+			font = newfont;
 		}
 		public class PLATA
 		{

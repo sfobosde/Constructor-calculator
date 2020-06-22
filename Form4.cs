@@ -12,9 +12,17 @@ namespace WindowsFormsApp1
 {
 	public partial class Form4 : Form
 	{
+		public static Font font;
+
+		public static void SetFont(Font newfont)
+		{
+			font = newfont;
+		}
 		public Form4()
 		{
 			InitializeComponent();
+			this.Font = font;
+
 			label2.Text = "Автором данной программы является:\n" +
 				"выпускник 2020 года КНИТУ-КАИ\n" +
 				"Давлятшин Рамис Валиянович\n" +
