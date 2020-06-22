@@ -125,11 +125,11 @@ namespace WindowsFormsApp1
 					fp = f2 * 100 / f1;
 				switch(kt)
 				{
-					case 1: dno = -0.15; O = 0.4; dvo = 0.05; gp = 0.3; tvo = 0.25; tno = -0.2; TD = 0.25; Td = 0.4; break;
-					case 2: dno = -0.15; O = 0.4; dvo = 0.05; gp = 0.2; tvo = 0.15; tno = -0.1; TD = 0.2; Td = 0.3; break;
-					case 3: dno = -0.1; O = 0.33; dvo = 0; gp = 0.1; tvo = 0.10; tno = -0.1; TD = 0.1; Td = 0.2; break;
-					case 4: dno = -0.1; O = 0.25; dvo = 0; gp = 0.5; tvo = 0.05; tno = -0.05; TD = 0.08; Td = 0.15; break;
-					case 5: dno = -0.075; O = 0.2; dvo = 0; gp = 0.025; tvo = 0.03; tno = -0.03; TD = 0.08; Td = 0.08; break;
+					case 1: dno = -0.15;	O = 0.4;	dvo = 0.05;		gp = 0.3;	tvo = 0.25;		tno = -0.2;		TD = 0.25;	Td = 0.4;	break;
+					case 2: dno = -0.15;	O = 0.4;	dvo = 0.05;		gp = 0.2;	tvo = 0.15;		tno = -0.1;		TD = 0.2;	Td = 0.3;	break;
+					case 3: dno = -0.1;		O = 0.33;	dvo = 0;		gp = 0.1;	tvo = 0.10;		tno = -0.1;		TD = 0.1;	Td = 0.2;	break;
+					case 4: dno = -0.1;		O = 0.25;	dvo = 0;		gp = 0.5;	tvo = 0.05;		tno = -0.05;	TD = 0.08;	Td = 0.15;	break;
+					case 5: dno = -0.075;	O = 0.2;	dvo = 0;		gp = 0.025; tvo = 0.03;		tno = -0.03;	TD = 0.08;	Td = 0.08;	break;
 				}
 				d = dno + de + 0.4;
 				d0 = z * O;
@@ -137,7 +137,10 @@ namespace WindowsFormsApp1
 			}
 		}
 
-		delegate void PrintProjectData(string name, string x, string y, string z, string weight, string material, string de, string kt, string fp, string d, string d0, string D);
+		delegate void PrintProjectData(string name, string x, string y, 
+									   string z, string weight, string material, 
+									   string de, string kt, string fp, 
+									   string d, string d0, string D);
 		private void button1_Click(object sender, EventArgs e)
 		{
 			PrintProjectData PrintData = new PrintProjectData(Form1.ShowData);

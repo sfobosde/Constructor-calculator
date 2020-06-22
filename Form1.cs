@@ -58,14 +58,21 @@ namespace WindowsFormsApp1
 		void SaveProject(object sr, EventArgs e)
 		{
 			string query = "INSERT INTO Projects (name, x, y, z, weight, material, de, kt, fp, d, d0, Diam) VALUES ";
-			string data = "('" + textBox1.Text + "', '" + textBox2.Text + "', '" + textBox4.Text + "', '" 
-							   + textBox3.Text + "', '" + textBox8.Text + "', '" + textBox7.Text + "', '"
-							   + textBox6.Text + "', '" + textBox5.Text + "', '" + textBox12.Text + "', '" 
-							   + textBox11.Text + "', '" + textBox10.Text + "', '" + textBox9.Text 	+ "')";
+			string data = "('" + textBox1.Text	+	"', '"	+ textBox2.Text		+	"', '" + textBox4.Text	+	"', '" 
+							   + textBox3.Text	+	"', '"	+ textBox8.Text		+	"', '" + textBox7.Text	+	"', '"
+							   + textBox6.Text	+	"', '"	+ textBox5.Text		+	"', '" + textBox12.Text +	"', '" 
+							   + textBox11.Text +	"', '"	+ textBox10.Text	+	"', '" + textBox9.Text 	+	"')";
 			query = query + data;
 
-			OleDbCommand command = new OleDbCommand(query, myConnection);
-			command.ExecuteNonQuery();
+			try
+			{
+				OleDbCommand command = new OleDbCommand(query, myConnection);
+				command.ExecuteNonQuery();
+			}
+			catch
+			{
+				MessageBox.Show("Отсутвует база данных");
+			}
 		}
 		void ExitFromApp(object sr, EventArgs e)
 		{

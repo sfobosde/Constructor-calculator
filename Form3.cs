@@ -22,7 +22,6 @@ namespace WindowsFormsApp1
 			myConnection = new OleDbConnection(connectString);
 			myConnection.Open();
 
-			//name, x, y, z, weight, material, de, kt, fp, d, d0, Diam 
 			string query = "SELECT name FROM Projects ORDER BY p_id ";
 
 			try
