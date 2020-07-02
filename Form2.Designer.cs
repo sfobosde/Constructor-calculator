@@ -220,6 +220,7 @@
 			this.Controls.Add(this.textBox1);
 			this.Name = "Form2";
 			this.Text = "Создание проекта";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

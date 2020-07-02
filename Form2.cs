@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.OleDb;
 
 namespace WindowsFormsApp1
 {
@@ -16,7 +17,13 @@ namespace WindowsFormsApp1
 		{
 			InitializeComponent();
 			this.Font = font;
+
+			myConnection = new OleDbConnection(connectString);
+			myConnection.Open();
 		}
+
+		public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Params.mdb;";
+		private static OleDbConnection myConnection;
 
 		public static Font font;
 
@@ -31,11 +38,12 @@ namespace WindowsFormsApp1
 			public string material;
 			public double de;
 			public int kt;
-			double B;
-			double plot;
+			double xy;
+			double B = 0;
+			double plot = 0;
 			double m;
 			double Kv;
-			double Km;
+			double Km = 0;
 			double f1;
 			double f2;
 			public double fp = 0;
@@ -64,65 +72,23 @@ namespace WindowsFormsApp1
 				this.material = material;
 				this.de = de;
 				this.kt = kt;
-				switch (x / y)
-				{
-					case 0.25:
-						B = 9;
-						break;
-					case 0.5: 
-						B = 11; 
-						break;
-					case 1: 
-						B = 18; 
-						break;
-					case 1.5: 
-						B = 28; 
-						break;
-					case 2: 
-						B = 43; 
-						break;
-					case 2.5: 
-						B = 62; 
-						break;
-					case 3: 
-						B = 85; 
-						break;
-					case 4: 
-						B = 144; 
-						break;
-					default: 
-						break;
-				}
-				if (material.Equals("Молибден"))
-				{
-					plot = 10.22;
-					Km = 1.10;
-				}
-				else if (material.Equals("Фенольная смола"))
-				{
-					plot = 7.82;
-					Km = 0.47;
-				}
-				else if (material.Equals("Титан"))
-				{
-					plot = 4.5;
-					Km = 0.93;
-				}
-				else if (material.Equals("Алюминиевые сплавы"))
-				{
-					plot = 2.7;
-					Km = 0.95;
-				}
-				else if (material.Equals("Гетинакс"))
-				{
-					plot = 2.47;
-					Km = 0.54;
-				}
-				else if (material.Equals("Эпоксидная смола"))
-				{
-					plot = 1.2;
-					Km = 0.52;
-				}
+				this.xy = x / y;
+
+				string query = "SELECT relat, B FROM XYrelat";
+				OleDbCommand ToGetXYRelCmd = new OleDbCommand(query, myConnection);
+				OleDbDataReader reader1 = ToGetXYRelCmd.ExecuteReader();
+
+				while ((reader1.Read()) && (reader1[0].Equals(xy.ToString()) == false)) ;
+				B = Convert.ToDouble(reader1[1].ToString());
+
+				query = "SELECT material, plot, km FROM MaterialData";
+				OleDbCommand ToGetMaterData = new OleDbCommand(query, myConnection);
+				OleDbDataReader reader2 = ToGetMaterData.ExecuteReader();
+
+				while ((reader2.Read()) && (reader2[0].Equals(material) == false));
+				plot = Convert.ToDouble(reader2[1].ToString());
+				Km = Convert.ToDouble(reader2[2].ToString());
+
 				Kv = 1 / Math.Pow((1+(weight/(x*y*z*plot))),0.5);
 				f1 = Km * Kv * B * z * 10000 / (x * x);
 				p = f1 * 0.8 / 9.8;
@@ -131,14 +97,21 @@ namespace WindowsFormsApp1
 				VP = f1 > f2;
 				if(VP==true)
 					fp = f2 * 100 / f1;
-				switch(kt)
-				{
-					case 1: dno = -0.15;	O = 0.4;	dvo = 0.05;		gp = 0.3;	tvo = 0.25;		tno = -0.2;		TD = 0.25;	Td = 0.4;	break;
-					case 2: dno = -0.15;	O = 0.4;	dvo = 0.05;		gp = 0.2;	tvo = 0.15;		tno = -0.1;		TD = 0.2;	Td = 0.3;	break;
-					case 3: dno = -0.1;		O = 0.33;	dvo = 0;		gp = 0.1;	tvo = 0.10;		tno = -0.1;		TD = 0.1;	Td = 0.2;	break;
-					case 4: dno = -0.1;		O = 0.25;	dvo = 0;		gp = 0.5;	tvo = 0.05;		tno = -0.05;	TD = 0.08;	Td = 0.15;	break;
-					case 5: dno = -0.075;	O = 0.2;	dvo = 0;		gp = 0.025; tvo = 0.03;		tno = -0.03;	TD = 0.08;	Td = 0.08;	break;
-				}
+
+				query = "SELECT kt, dno, O, dvo, gp, tvo, tno, TD1,TD2 FROM KTData";
+				OleDbCommand ToGetKTData = new OleDbCommand(query, myConnection);
+				OleDbDataReader reader3 = ToGetKTData.ExecuteReader();
+
+				while ((reader3.Read()) && (reader3[0].Equals(kt.ToString()) == false));
+				dno =	Convert.ToDouble(reader3[1].ToString());
+				O =		Convert.ToDouble(reader3[2].ToString());
+				dvo =	Convert.ToDouble(reader3[3].ToString());
+				gp =	Convert.ToDouble(reader3[4].ToString());
+				tvo =	Convert.ToDouble(reader3[5].ToString());
+				tno =	Convert.ToDouble(reader3[6].ToString());
+				TD =	Convert.ToDouble(reader3[7].ToString());
+				Td =	Convert.ToDouble(reader3[8].ToString());
+
 				d = dno + de + 0.4;
 				d0 = z * O;
 				D = d + dvo + 2 * gp + tvo + 2 * dtr + Math.Pow(Td*Td + TD*TD + tno*tno, 0.5);
@@ -169,6 +142,11 @@ namespace WindowsFormsApp1
 			{
 				MessageBox.Show("Данные введены неправильно");
 			}
+		}
+
+		private void Form2_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			myConnection.Close();
 		}
 	}
 }
